@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Locate } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import LeafletMap from "@/components/LeafletMap";
+import SimpleWorldMap from "@/components/SimpleWorldMap";
 
 const LocationSelect = () => {
   const navigate = useNavigate();
@@ -90,23 +90,12 @@ const LocationSelect = () => {
               </Button>
             </div>
 
-            <div className="space-y-4">
-              <div className="h-[500px] bg-muted/30 rounded-xl">
-                <LeafletMap
-                  onLocationSelect={(location, coords) => {
-                    setSelectedLocation(location);
-                    setCoordinates(coords);
-                  }}
-                />
-              </div>
-              
-              {selectedLocation && (
-                <div className="p-4 bg-primary/10 rounded-lg border border-primary animate-in fade-in slide-in-from-bottom-2">
-                  <p className="text-sm text-muted-foreground">Selected Location:</p>
-                  <p className="text-lg font-semibold">{selectedLocation}</p>
-                </div>
-              )}
-            </div>
+            <SimpleWorldMap
+              onLocationSelect={(location, coords) => {
+                setSelectedLocation(location);
+                setCoordinates(coords);
+              }}
+            />
 
             <div className="flex justify-center gap-4">
               <Button
