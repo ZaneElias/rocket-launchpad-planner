@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Locate } from "lucide-react";
+import { Locate, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SimpleWorldMap from "@/components/SimpleWorldMap";
 
@@ -65,25 +65,25 @@ const LocationSelect = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="container mx-auto max-w-6xl space-y-8">
-        <header className="text-center space-y-2">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="min-h-screen py-12 px-4">
+      <div className="container mx-auto max-w-6xl space-y-10">
+        <header className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <h1 className="text-4xl md:text-5xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">
             Select Launch Location
           </h1>
-          <p className="text-muted-foreground">
-            Choose your location to analyze feasibility
+          <p className="text-lg text-muted-foreground">
+            Choose from famous launch sites or enter custom coordinates
           </p>
         </header>
 
-        <Card className="p-8 backdrop-blur-sm bg-card/50 border-border">
-          <div className="space-y-6">
+        <Card className="p-8 backdrop-blur-xl bg-card/60 border-border/50 shadow-[var(--glow-card)] animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+          <div className="space-y-8">
             <div className="flex justify-center">
               <Button
                 onClick={handleUseMyLocation}
                 size="lg"
                 variant="outline"
-                className="gap-2"
+                className="gap-2 px-6 py-6 text-base font-display border-2 hover:bg-primary/10 hover:border-primary/50"
               >
                 <Locate className="w-5 h-5" />
                 Use My Current Location
@@ -97,11 +97,12 @@ const LocationSelect = () => {
               }}
             />
 
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-4 pt-4">
               <Button
                 onClick={() => navigate("/")}
                 variant="outline"
                 size="lg"
+                className="px-8 py-6 text-base font-display border-2"
               >
                 Back
               </Button>
@@ -109,9 +110,10 @@ const LocationSelect = () => {
                 onClick={handleAnalyze}
                 disabled={!selectedLocation}
                 size="lg"
-                className="bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                className="px-8 py-6 text-base font-display font-semibold bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 disabled:opacity-50 disabled:shadow-none shadow-[var(--glow-primary)]"
               >
                 Analyze Feasibility
+                <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </div>
           </div>

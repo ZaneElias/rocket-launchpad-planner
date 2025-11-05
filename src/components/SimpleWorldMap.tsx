@@ -71,8 +71,8 @@ const SimpleWorldMap = ({ onLocationSelect }: SimpleWorldMapProps) => {
   return (
     <div className="space-y-6">
       {/* World Map Visualization */}
-      <Card className="p-6 bg-card/50 backdrop-blur-sm">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+      <Card className="p-6 bg-card/60 backdrop-blur-xl border-border/50 shadow-[var(--glow-card)]">
+        <h3 className="text-lg font-display font-semibold mb-4 flex items-center gap-2">
           <MapPin className="w-5 h-5 text-primary" />
           Famous Launch Sites
         </h3>
@@ -81,13 +81,13 @@ const SimpleWorldMap = ({ onLocationSelect }: SimpleWorldMapProps) => {
             <button
               key={city.name}
               onClick={() => handleCitySelect(city)}
-              className={`p-4 rounded-lg border-2 text-left transition-all ${
+              className={`p-4 rounded-xl border-2 text-left transition-all duration-300 hover:scale-[1.02] ${
                 selectedCity === city.name
                   ? "border-primary bg-primary/10 shadow-[var(--glow-primary)]"
-                  : "border-border hover:border-primary/50 bg-card/30"
+                  : "border-border hover:border-primary/50 bg-gradient-to-br from-card to-muted/20"
               }`}
             >
-              <div className="font-semibold text-sm">{city.name.split(",")[0]}</div>
+              <div className="font-display font-semibold text-sm">{city.name.split(",")[0]}</div>
               <div className="text-xs text-muted-foreground mt-1">
                 {city.name.split(",")[1]}
               </div>
@@ -100,8 +100,8 @@ const SimpleWorldMap = ({ onLocationSelect }: SimpleWorldMapProps) => {
       </Card>
 
       {/* Custom Coordinates Input */}
-      <Card className="p-6 bg-card/50 backdrop-blur-sm">
-        <h3 className="text-lg font-semibold mb-4">Custom Coordinates</h3>
+      <Card className="p-6 bg-card/60 backdrop-blur-xl border-border/50 shadow-[var(--glow-card)]">
+        <h3 className="text-lg font-display font-semibold mb-4">Custom Coordinates</h3>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <label className="text-sm text-muted-foreground mb-2 block">
@@ -141,7 +141,7 @@ const SimpleWorldMap = ({ onLocationSelect }: SimpleWorldMapProps) => {
         <button
           onClick={handleCustomLocation}
           disabled={!customLocation.lat || !customLocation.lng}
-          className="mt-4 px-6 py-2 rounded-lg bg-gradient-to-r from-primary to-accent hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="mt-4 px-8 py-3 rounded-xl bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-display font-semibold shadow-[var(--glow-primary)] disabled:shadow-none"
         >
           Use These Coordinates
         </button>

@@ -134,29 +134,31 @@ const ChatBot = () => {
         <Button
           onClick={() => setIsOpen(true)}
           size="lg"
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-[var(--glow-primary)] bg-gradient-to-r from-primary to-accent hover:opacity-90 z-50"
+          className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-[var(--glow-primary)] bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 hover:scale-110 transition-all z-50"
         >
-          <MessageCircle className="w-6 h-6" />
+          <MessageCircle className="w-7 h-7" />
         </Button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 w-96 h-[600px] flex flex-col backdrop-blur-sm bg-card/95 border-border shadow-2xl z-50">
+        <Card className="fixed bottom-6 right-6 w-[420px] h-[650px] flex flex-col backdrop-blur-xl bg-card/95 border-border/50 shadow-2xl shadow-primary/20 z-50 animate-in fade-in slide-in-from-bottom-8 duration-500">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-primary/10 to-accent/10">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-primary" />
+          <div className="flex items-center justify-between p-5 border-b border-border/50 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                <MessageCircle className="w-5 h-5" />
+              </div>
               <div>
-                <h3 className="font-semibold">Support Assistant</h3>
-                <p className="text-xs text-muted-foreground">Powered by AI</p>
+                <h3 className="font-display font-semibold text-base">AI Support</h3>
+                <p className="text-xs text-muted-foreground">Always here to help</p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen(false)}
-              className="h-8 w-8"
+              className="h-9 w-9 hover:bg-destructive/10"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -171,23 +173,23 @@ const ChatBot = () => {
                   className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                       message.role === "user"
-                        ? "bg-gradient-to-r from-primary to-accent text-primary-foreground"
-                        : "bg-muted text-foreground"
+                        ? "bg-gradient-to-r from-primary via-secondary to-accent text-white ml-auto"
+                        : "bg-muted/50 text-foreground"
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                   </div>
                 </div>
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-muted rounded-lg px-4 py-2">
-                    <div className="flex gap-1">
+                  <div className="bg-muted/50 rounded-2xl px-4 py-3">
+                    <div className="flex gap-1.5">
                       <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-100" />
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-200" />
+                      <div className="w-2 h-2 bg-secondary rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
+                      <div className="w-2 h-2 bg-accent rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
                     </div>
                   </div>
                 </div>
@@ -196,21 +198,21 @@ const ChatBot = () => {
           </ScrollArea>
 
           {/* Input */}
-          <div className="p-4 border-t border-border">
-            <div className="flex gap-2">
+          <div className="p-5 border-t border-border/50 bg-card/50">
+            <div className="flex gap-3">
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything..."
                 disabled={isLoading}
-                className="flex-1"
+                className="flex-1 bg-background/50 border-border/50 focus:border-primary rounded-xl"
               />
               <Button
                 onClick={handleSend}
                 disabled={isLoading || !input.trim()}
                 size="icon"
-                className="bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                className="h-11 w-11 bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 rounded-xl shadow-[var(--glow-primary)]"
               >
                 <Send className="w-4 h-4" />
               </Button>

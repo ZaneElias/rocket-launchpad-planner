@@ -15,6 +15,9 @@ import {
   AlertTriangle,
   XCircle,
   Loader2,
+  Sparkles,
+  ArrowLeft,
+  MapPin,
 } from "lucide-react";
 
 type FeasibilityLevel = "high" | "medium" | "low";
@@ -61,7 +64,6 @@ const Results = () => {
 
         if (error) throw error;
 
-        // Transform API response to UI format
         const analysisResults: AnalysisResult[] = [
           {
             title: "Resources & Availability",
@@ -126,33 +128,45 @@ const Results = () => {
   const getLevelIcon = (level: FeasibilityLevel) => {
     switch (level) {
       case "high":
-        return <CheckCircle2 className="w-5 h-5 text-green-500" />;
+        return <CheckCircle2 className="w-5 h-5 text-emerald-400" />;
       case "medium":
-        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+        return <AlertTriangle className="w-5 h-5 text-yellow-400" />;
       case "low":
-        return <XCircle className="w-5 h-5 text-red-500" />;
+        return <XCircle className="w-5 h-5 text-rose-400" />;
     }
   };
 
   const getLevelColor = (level: FeasibilityLevel) => {
     switch (level) {
       case "high":
-        return "bg-green-500/10 text-green-500 border-green-500/20";
+        return "from-emerald-500/20 to-emerald-600/10 border-emerald-500/30";
       case "medium":
-        return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
+        return "from-yellow-500/20 to-yellow-600/10 border-yellow-500/30";
       case "low":
-        return "bg-red-500/10 text-red-500 border-red-500/20";
+        return "from-rose-500/20 to-rose-600/10 border-rose-500/30";
     }
+  };
+
+  const getLevelBadge = (level: FeasibilityLevel) => {
+    const colors = {
+      high: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+      medium: "bg-yellow-500/15 text-yellow-400 border-yellow-500/30",
+      low: "bg-rose-500/15 text-rose-400 border-rose-500/30",
+    };
+    return colors[level];
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
+        <div className="text-center space-y-6">
+          <div className="relative">
+            <Loader2 className="w-16 h-16 animate-spin mx-auto text-primary" />
+            <Sparkles className="w-6 h-6 absolute top-0 right-0 text-accent animate-pulse" />
+          </div>
           <div>
-            <p className="text-xl font-semibold">Analyzing Location</p>
-            <p className="text-muted-foreground">Gathering real-time data...</p>
+            <p className="text-2xl font-display font-semibold mb-2">Analyzing Location</p>
+            <p className="text-muted-foreground">Gathering comprehensive data from multiple sources...</p>
           </div>
         </div>
       </div>
@@ -160,51 +174,68 @@ const Results = () => {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <div className="container mx-auto max-w-7xl space-y-8">
-        <header className="text-center space-y-4">
-          <Badge variant="outline" className="mb-2">
-            {rocketType === "industrial" ? "Industrial Application" : "Model Rocket"}
-            {modelSubType && ` - ${modelSubType === "hobby" ? "Hobby" : "Solo/Team Project"}`}
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+    <div className="min-h-screen py-12 px-4">
+      <div className="container mx-auto max-w-7xl space-y-12">
+        {/* Header */}
+        <header className="text-center space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <Badge variant="outline" className="px-4 py-1.5 bg-primary/10 border-primary/30">
+              {rocketType === "industrial" ? "Industrial Application" : "Model Rocket"}
+              {modelSubType && ` • ${modelSubType === "hobby" ? "Hobby" : "Solo/Team Project"}`}
+            </Badge>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">
             Feasibility Analysis
           </h1>
-          <p className="text-xl text-muted-foreground">
-            Launch Analysis for {selectedLocation}
-          </p>
+          <div className="flex items-center justify-center gap-2 text-xl text-muted-foreground">
+            <MapPin className="w-5 h-5 text-primary" />
+            <p>{selectedLocation}</p>
+          </div>
         </header>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Results Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
           {results.map((result, index) => {
             const Icon = result.icon;
             return (
               <Card
                 key={index}
-                className="p-6 backdrop-blur-sm bg-card/50 border-border hover:shadow-xl transition-all"
+                className={`group relative overflow-hidden p-8 backdrop-blur-xl bg-gradient-to-br ${getLevelColor(result.level)} border-2 hover:scale-[1.02] transition-all duration-500 shadow-[var(--glow-card)]`}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="space-y-4">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
+                
+                <div className="relative space-y-5">
+                  {/* Header */}
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-primary/10">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 group-hover:bg-primary/20 transition-colors">
                         <Icon className="w-6 h-6 text-primary" />
                       </div>
-                      <h3 className="font-semibold text-lg">{result.title}</h3>
+                      <div>
+                        <h3 className="font-display font-semibold text-xl mb-1">{result.title}</h3>
+                        {getLevelIcon(result.level)}
+                      </div>
                     </div>
-                    {getLevelIcon(result.level)}
                   </div>
 
-                  <Badge className={getLevelColor(result.level)}>
+                  {/* Status Badge */}
+                  <Badge className={`${getLevelBadge(result.level)} font-semibold border`}>
                     {result.level.toUpperCase()}
                   </Badge>
 
-                  <p className="text-sm text-muted-foreground">{result.description}</p>
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {result.description}
+                  </p>
 
-                  <ul className="space-y-2">
+                  {/* Details List */}
+                  <ul className="space-y-2.5 pt-2">
                     {result.details.map((detail, idx) => (
-                      <li key={idx} className="flex gap-2 text-sm">
-                        <span className="text-primary mt-1">•</span>
-                        <span>{detail}</span>
+                      <li key={idx} className="flex gap-3 text-sm">
+                        <span className="text-primary mt-0.5 font-bold">•</span>
+                        <span className="text-foreground/90 leading-relaxed">{detail}</span>
                       </li>
                     ))}
                   </ul>
@@ -214,19 +245,23 @@ const Results = () => {
           })}
         </div>
 
-        <div className="flex justify-center gap-4 pt-8">
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
           <Button
             onClick={() => navigate("/location-select", { state: { rocketType, modelSubType } })}
             variant="outline"
             size="lg"
+            className="px-8 py-6 text-base font-display font-semibold border-2 hover:bg-primary/10 hover:border-primary/50"
           >
+            <ArrowLeft className="mr-2 w-5 h-5" />
             Try Different Location
           </Button>
           <Button
             onClick={() => navigate("/")}
             size="lg"
-            className="bg-gradient-to-r from-primary to-accent hover:opacity-90"
+            className="px-8 py-6 text-base font-display font-semibold bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 shadow-[var(--glow-primary)]"
           >
+            <Sparkles className="mr-2 w-5 h-5" />
             Start New Analysis
           </Button>
         </div>
