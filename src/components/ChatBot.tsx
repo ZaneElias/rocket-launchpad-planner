@@ -16,7 +16,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm here to help you with the Rocket Launch Feasibility Calculator. Ask me anything about analyzing launch locations, understanding feasibility factors, or rocket regulations!",
+      content: "Hello! I'm your support assistant for the Rocket Launch Feasibility Calculator. I can help you understand the analysis results, guide you through the app, or answer questions about rocket launches. How can I assist you today?",
     },
   ]);
   const [input, setInput] = useState("");

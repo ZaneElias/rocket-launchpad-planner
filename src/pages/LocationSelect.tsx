@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Locate } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import MapboxMap from "@/components/MapboxMap";
+import LeafletMap from "@/components/LeafletMap";
 
 const LocationSelect = () => {
   const navigate = useNavigate();
@@ -91,8 +91,8 @@ const LocationSelect = () => {
             </div>
 
             <div className="space-y-4">
-              <div className="aspect-video bg-muted/30 rounded-xl border-2 border-border overflow-hidden">
-                <MapboxMap
+              <div className="h-[500px] bg-muted/30 rounded-xl">
+                <LeafletMap
                   onLocationSelect={(location, coords) => {
                     setSelectedLocation(location);
                     setCoordinates(coords);

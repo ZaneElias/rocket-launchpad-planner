@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Package,
   Scale,
@@ -12,6 +14,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
+  Loader2,
 } from "lucide-react";
 
 type FeasibilityLevel = "high" | "medium" | "low";
@@ -27,13 +30,98 @@ interface AnalysisResult {
 const Results = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { rocketType, modelSubType, location: selectedLocation } = location.state || {};
+  const { toast } = useToast();
+  const { 
+    rocketType, 
+    modelSubType, 
+    location: selectedLocation,
+    coordinates 
+  } = location.state || {};
+  
+  const [results, setResults] = useState<AnalysisResult[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!rocketType || !selectedLocation) {
       navigate("/");
+      return;
     }
-  }, [rocketType, selectedLocation, navigate]);
+    
+    const fetchAnalysis = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("analyze-location", {
+          body: {
+            location: selectedLocation,
+            coordinates,
+            rocketType,
+            modelSubType,
+          },
+        });
+
+        if (error) throw error;
+
+        // Transform API response to UI format
+        const analysisResults: AnalysisResult[] = [
+          {
+            title: "Resources & Availability",
+            icon: Package,
+            level: data.resources.level,
+            description: data.resources.description,
+            details: data.resources.details,
+          },
+          {
+            title: "Government & Legality",
+            icon: Scale,
+            level: data.government.level,
+            description: data.government.description,
+            details: data.government.details,
+          },
+          {
+            title: "Geographical Status",
+            icon: Mountain,
+            level: data.geography.level,
+            description: data.geography.description,
+            details: data.geography.details,
+          },
+          {
+            title: "Geopolitical Status",
+            icon: Globe,
+            level: data.geopolitics.level,
+            description: data.geopolitics.description,
+            details: data.geopolitics.details,
+          },
+          {
+            title: "Best Time",
+            icon: Clock,
+            level: data.timing.level,
+            description: data.timing.description,
+            details: data.timing.details,
+          },
+          {
+            title: "Overall Practicality",
+            icon: CheckCircle2,
+            level: data.practicality.level,
+            description: data.practicality.description,
+            details: data.practicality.details,
+          },
+        ];
+
+        setResults(analysisResults);
+      } catch (error) {
+        console.error("Analysis error:", error);
+        toast({
+          title: "Analysis Failed",
+          description: "Could not fetch location analysis. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAnalysis();
+  }, [rocketType, selectedLocation, coordinates, modelSubType, navigate, toast]);
 
   const getLevelIcon = (level: FeasibilityLevel) => {
     switch (level) {
@@ -57,92 +145,19 @@ const Results = () => {
     }
   };
 
-  // Mock results - in production, this would come from API/analysis
-  const results: AnalysisResult[] = [
-    {
-      title: "Resources & Availability",
-      icon: Package,
-      level: "high",
-      description: "Good access to materials and suppliers",
-      details: [
-        "Local aerospace suppliers available",
-        "Standard rocket components in stock",
-        "Fuel and propellant accessible",
-        "Technical expertise present in region",
-      ],
-    },
-    {
-      title: "Government & Legality",
-      icon: Scale,
-      level: "medium",
-      description: "Permits required but obtainable",
-      details: [
-        "Launch permits available from local aviation authority",
-        "Environmental impact assessment needed",
-        "Airspace restrictions apply",
-        "Insurance requirements must be met",
-      ],
-    },
-    {
-      title: "Geographical Status",
-      icon: Mountain,
-      level: "high",
-      description: "Suitable terrain and conditions",
-      details: [
-        "Open areas available for safe launch",
-        "Low population density in launch zone",
-        "Favorable altitude and climate",
-        "Recovery areas accessible",
-      ],
-    },
-    {
-      title: "Geopolitical Status",
-      icon: Globe,
-      level: "high",
-      description: "Stable region with minimal restrictions",
-      details: [
-        "No active conflict zones nearby",
-        "Stable government regulations",
-        "International cooperation possible",
-        "Technology transfer allowed",
-      ],
-    },
-    {
-      title: "Best Time",
-      icon: Clock,
-      level: "medium",
-      description: "Seasonal considerations apply",
-      details: [
-        "Spring and Fall offer best conditions",
-        "Avoid rainy season (June-August)",
-        "Wind patterns favorable in April-May",
-        "Temperature ranges optimal in autumn",
-      ],
-    },
-    {
-      title: "Overall Practicality",
-      icon: CheckCircle2,
-      level: rocketType === "industrial" ? "medium" : "high",
-      description:
-        rocketType === "industrial"
-          ? "Feasible with proper planning and investment"
-          : "Highly practical for hobby launches",
-      details:
-        rocketType === "industrial"
-          ? [
-              "Estimated setup time: 6-12 months",
-              "Budget required: $500K - $2M",
-              "Team of 15-20 specialists needed",
-              "Regulatory approval process: 3-6 months",
-            ]
-          : [
-              "Can start within 1-2 weeks",
-              "Budget: $200 - $2,000",
-              "Solo or small team viable",
-              "Minimal regulatory hurdles",
-            ],
-    },
-  ];
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
+          <div>
+            <p className="text-xl font-semibold">Analyzing Location</p>
+            <p className="text-muted-foreground">Gathering real-time data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-8">
