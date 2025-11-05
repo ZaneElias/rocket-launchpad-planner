@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { MapPin, Locate } from "lucide-react";
+import { Locate } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import MapboxMap from "@/components/MapboxMap";
 
 const LocationSelect = () => {
   const navigate = useNavigate();
@@ -89,24 +90,22 @@ const LocationSelect = () => {
               </Button>
             </div>
 
-            <div className="relative">
-              <div className="aspect-video bg-muted/30 rounded-xl border-2 border-border flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <MapPin className="w-16 h-16 mx-auto text-primary" />
-                  <div>
-                    <p className="text-lg font-semibold">Interactive Map Coming Soon</p>
-                    <p className="text-sm text-muted-foreground">
-                      Click locations on the map to analyze
-                    </p>
-                  </div>
-                  {selectedLocation && (
-                    <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary">
-                      <p className="text-sm text-muted-foreground">Selected Location:</p>
-                      <p className="text-lg font-semibold">{selectedLocation}</p>
-                    </div>
-                  )}
-                </div>
+            <div className="space-y-4">
+              <div className="aspect-video bg-muted/30 rounded-xl border-2 border-border overflow-hidden">
+                <MapboxMap
+                  onLocationSelect={(location, coords) => {
+                    setSelectedLocation(location);
+                    setCoordinates(coords);
+                  }}
+                />
               </div>
+              
+              {selectedLocation && (
+                <div className="p-4 bg-primary/10 rounded-lg border border-primary animate-in fade-in slide-in-from-bottom-2">
+                  <p className="text-sm text-muted-foreground">Selected Location:</p>
+                  <p className="text-lg font-semibold">{selectedLocation}</p>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-center gap-4">
