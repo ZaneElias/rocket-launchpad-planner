@@ -18,6 +18,7 @@ import {
   Sparkles,
   ArrowLeft,
   MapPin,
+  CloudRain,
 } from "lucide-react";
 
 type FeasibilityLevel = "high" | "medium" | "low";
@@ -43,6 +44,8 @@ const Results = () => {
   
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [weatherAnalysis, setWeatherAnalysis] = useState<string | null>(null);
+  const [isAnalyzingWeather, setIsAnalyzingWeather] = useState(false);
 
   useEffect(() => {
     if (!rocketType || !selectedLocation) {
@@ -156,6 +159,54 @@ const Results = () => {
     return colors[level];
   };
 
+  const analyzeWeather = async () => {
+    if (!coordinates) {
+      toast({
+        title: "No Coordinates",
+        description: "Weather analysis requires location coordinates.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAnalyzingWeather(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-weather", {
+        body: {
+          latitude: coordinates.lat,
+          longitude: coordinates.lng,
+          locationName: selectedLocation,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        toast({
+          title: "Analysis Error",
+          description: data.error,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setWeatherAnalysis(data.analysis);
+      toast({
+        title: "Weather Analysis Complete",
+        description: "AI has analyzed optimal launch windows for this location.",
+      });
+    } catch (error) {
+      console.error("Weather analysis error:", error);
+      toast({
+        title: "Analysis Failed",
+        description: "Could not complete weather analysis. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzingWeather(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -244,6 +295,54 @@ const Results = () => {
             );
           })}
         </div>
+
+        {/* Weather Analysis Section */}
+        {!weatherAnalysis && (
+          <div className="flex justify-center pt-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+            <Button
+              onClick={analyzeWeather}
+              disabled={isAnalyzingWeather || !coordinates}
+              size="lg"
+              className="px-8 py-6 text-base font-display font-semibold bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 hover:opacity-90 shadow-lg"
+            >
+              {isAnalyzingWeather ? (
+                <>
+                  <Loader2 className="mr-2 w-5 h-5 animate-spin" />
+                  Analyzing Weather Patterns...
+                </>
+              ) : (
+                <>
+                  <CloudRain className="mr-2 w-5 h-5" />
+                  AI Weather Analysis & Launch Windows
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
+        {/* Weather Analysis Results */}
+        {weatherAnalysis && (
+          <Card className="p-8 backdrop-blur-xl bg-gradient-to-br from-blue-500/10 to-cyan-600/5 border-2 border-blue-500/30 shadow-[0_0_40px_rgba(59,130,246,0.15)] animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 pb-4 border-b border-blue-500/20">
+                <div className="p-3 rounded-xl bg-blue-500/20 border border-blue-500/30">
+                  <CloudRain className="w-6 h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-display font-bold text-blue-300">
+                    Weather Analysis & Optimal Launch Windows
+                  </h2>
+                  <p className="text-sm text-muted-foreground">AI-powered meteorological assessment</p>
+                </div>
+              </div>
+              <div className="prose prose-invert max-w-none">
+                <div className="whitespace-pre-wrap text-foreground/90 leading-relaxed">
+                  {weatherAnalysis}
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
